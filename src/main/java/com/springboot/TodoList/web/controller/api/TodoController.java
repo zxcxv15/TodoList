@@ -30,7 +30,7 @@ public class TodoController {
 	
 	@GetMapping("/list/{type}")
 	public ResponseEntity<?> getTodoList(@PathVariable String type, @RequestParam int page, @RequestParam int contentCount) {
-		List<TodoListRespDto> list = null;
+		List<TodoListRespDto> list = null; // 메소드 안에서의 전역 변수로 잡아줘야 딴데서도 쓸 수 있다.
 		try {
 			list = todoService.getTodoList(type, page, contentCount);
 		} catch (Exception e) {
@@ -42,15 +42,17 @@ public class TodoController {
 	
 	@PostMapping("/todo")
 	public ResponseEntity<?> addTodo(@RequestBody CreateTodoReqDto createTodoReqDto) {
+		boolean status = false;
 		try {
-			if(!todoService.createTodo(createTodoReqDto)) {
+			status = todoService.createTodo(createTodoReqDto);
+			if(!status) {
 				throw new RuntimeException("DataBase Error");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "Adding todo failed", createTodoReqDto));
+			return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "Adding todo failed", status));
 		}
-		return ResponseEntity.ok().body(new CMRespDto<>(1, "success", createTodoReqDto));
+		return ResponseEntity.ok().body(new CMRespDto<>(1, "success", status));
 	}
 	
 	@PutMapping("/complete/todo/{todoCode}")

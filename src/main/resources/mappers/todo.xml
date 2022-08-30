@@ -80,7 +80,7 @@
 				</otherwise>
 			</choose>
 		order by
-			todo_code asc
+			todo_code desc
 		limit #{index}, #{count}
 	</select>
 	
